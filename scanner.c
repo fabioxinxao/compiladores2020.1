@@ -57,28 +57,17 @@ int main(int argc, char *argv[]){
     token ultimotoken;
     FILE *arq;
     
-	
-	if(argc > 1)
+	if (!(arq=fopen("teste.txt","r")))
 	{
-		if (!(arq=fopen(argv[1],"r")))
-		{
-			printf("Arquivo nao encontrado.\n");
-			exit(1);
-		}
-		while (arq!=EOF)
-		{
-			ultimotoken=scanner(arq);
-			printf("Token Lido:%s - Tipo:%d \n", ultimotoken.lexem, ultimotoken.type);
-		}
-		fclose(arq);
-	}	
-	else
-	{
-		printf("Deve ser passado arquivo txt para teste.\n");
+		printf("Arquivo nao encontrado.\n");
 		exit(1);
 	}
-//}
-
+	while (arq!=EOF)
+	{
+		ultimotoken=scanner(arq);
+		printf("Token Lido: %s <--> Tipo: %d \n", ultimotoken.lexem, ultimotoken.type);
+	}
+	fclose(arq);	
 	return 0;
 }
 
@@ -244,7 +233,7 @@ token scanner(FILE *arq) {
 			{//eh operador de atribuicao
 				vetor.lexem[i]='\0';
 				vetor.type=OP_assignment;
-				fseek(arq,-1,SEEK_CUR);
+				//fseek(arq,-1,SEEK_CUR);
 				return vetor;
 			}
 		}//fim de IF comparacao ou atribuicao
@@ -445,5 +434,3 @@ int RWord_find(char lex[])
 	return -1;
 
 }
-	
-	
