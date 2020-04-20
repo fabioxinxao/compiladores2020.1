@@ -45,8 +45,8 @@ int RWord_find(char lex[]);
 int OP_Find(char lex[]);
 
 //var global
-int line = 1;
-int column = 0;
+int linha = 1;
+int coluna = 0;
 char lookup;
 token vetor;
 
@@ -76,7 +76,7 @@ token scanner(FILE *arq) {
 	int i=0;
 	int estado=0;
 	int aceito=0;
-	int column=0;
+	int coluna=0;
 	vetor.lexem[0]='\0';
 	vetor.type=0;
 	static char lookup = ' ';
@@ -88,20 +88,20 @@ token scanner(FILE *arq) {
 			continue;	
 		else if(lookup=='\n')
 		{//somente incrementar linha
-			line++;
-			column=0;
+			linha++;
+			coluna=0;
 		}
 		
 		else if(isalpha(lookup))//inicio identificador ou palavra reservada
 		{
 			i=0;
-			column++;
+			coluna++;
 			do
 			{
 				vetor.lexem[i]=lookup;
 				i++;
 				lookup=getc(arq);
-				column++;
+				coluna++;
 				if(i>=TAM_LEX)
 				{
 					printf("Erro. tamanho do buffer excedido.\n");
@@ -128,7 +128,7 @@ token scanner(FILE *arq) {
 				{
 					vetor.lexem[i]=lookup;
 					i++;
-					column++;
+					coluna++;
 					lookup=getc(arq);
 					//continuacao da sequencia de digitos
 				}
@@ -139,7 +139,7 @@ token scanner(FILE *arq) {
 					{
 						vetor.lexem[i]=lookup;
 						i++;
-						column++;
+						coluna++;
 						lookup=getc(arq);
 					}while(isdigit(lookup)==0);
 					fseek(arq,-1,SEEK_CUR);
@@ -148,7 +148,7 @@ token scanner(FILE *arq) {
 				else
 				{
 					vetor.type= Rword_int;
-					column++;
+					coluna++;
 					fseek(arq,-1,SEEK_CUR);
 					return vetor;
 				}
@@ -340,10 +340,10 @@ token scanner(FILE *arq) {
 				do
 				{
 					lookup=getc(arq);
-					column++;
+					coluna++;
 					if(lookup=='\n')//descarta tudo ate achar o \n
 					{
-						line++;
+						linha++;
 						break;
 					}
 					else if(lookup==EOF)//se chegou ao fim do arquivo, pode retornar sem erro
@@ -362,7 +362,7 @@ token scanner(FILE *arq) {
 						lookup=getc(arq);
 						if(lookup='/')
 						{
-							line++;
+							linha++;
 							break;
 						}
 						else if(lookup==EOF)
@@ -381,7 +381,7 @@ token scanner(FILE *arq) {
 					else
 					{
 						lookup=getc(arq);
-						column++;	
+						coluna++;	
 					}	
 				}while(lookup!=EOF);
 			}
@@ -389,14 +389,14 @@ token scanner(FILE *arq) {
 			{
 				vetor.lexem[i]=lookup;
 				vetor.type=OP_div;
-				line++;
+				linha++;
 				fseek(arq,-1,SEEK_CUR);
 				return vetor;
 			}
 		}
 		else
 		{
-			printf("character %c invalido, localizado na linha: %d e coluna: %d", lookup,line,column);
+			printf("character %c invalido, localizado na linha: %d e coluna: %d", lookup,linha,coluna);
 			fclose(arq);
 			exit(0);
 		}
