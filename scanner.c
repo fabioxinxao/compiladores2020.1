@@ -123,43 +123,57 @@ token scanner(FILE *arq) {
 		else if(isdigit(lookup) || lookup=='.')//int ou float
 		{
 			while(isdigit(lookup)==0)
-			{	
-				if (isdigit(lookup))
+			{
+				vetor.lexem[i]=lookup;
+				i++;
+				coluna++;
+				lookup=getc(arq);
+				//continuacao da sequencia de digitos
+			}
+			if(lookup=='.')//inicio de float, nao pode ter outro . 
+			{
+				vetor.type=Rword_float;
+				vetor.lexem[i]=lookup;
+				i++;
+				coluna++;
+				lookup=getc(arq);
+				if(isdigit(lookup)!=0)
+				{
+					printf("Float mal formado, deveria vir um numero depois do . linha:%d coluna:%d",linha,coluna);
+					fclose(arq);
+					exit(0);
+				}
+				do
 				{
 					vetor.lexem[i]=lookup;
 					i++;
 					coluna++;
 					lookup=getc(arq);
-					//continuacao da sequencia de digitos
-				}
-				else if(lookup=='.')
-				{
-					vetor.type=Rword_float;
-					do
+					if(lookup=='.')
 					{
-						vetor.lexem[i]=lookup;
-						i++;
-						coluna++;
-						lookup=getc(arq);
-					}while(isdigit(lookup)==0);
-					fseek(arq,-1,SEEK_CUR);
-					return vetor;	
-				}
-				else
-				{
-					vetor.type= Rword_int;
-					coluna++;
-					fseek(arq,-1,SEEK_CUR);
-					return vetor;
-				}
+						printf("Problema com um float, linha:%d coluna %d",linha,coluna);
+						fclose(arq);
+						exit(0);
+					}
+				}while(isdigit(lookup)==0);
+				fseek(arq,-1,SEEK_CUR);
+				return vetor;	
 			}
-			
+			else
+			{
+				vetor.type= Rword_int;
+				coluna++;
+				fseek(arq,-1,SEEK_CUR);
+				return vetor;
+			}
 		}//fim else if int float
+		
 		else if (lookup=='<')//eh um operador relacional, verificar qual
 		{
 			vetor.lexem[i]=lookup;
 			i++;
 			lookup=getc(arq);
+			coluna++;
 			if (lookup=='='){
 				vetor.lexem[i]=lookup;
 				i++;
@@ -180,6 +194,7 @@ token scanner(FILE *arq) {
 			vetor.lexem[i]=lookup;
 			i++;
 			lookup=getc(arq);
+			coluna++;
 			if (lookup=='=')
 			{
 				vetor.lexem[i]=lookup;
@@ -201,6 +216,7 @@ token scanner(FILE *arq) {
 			vetor.lexem[i]=lookup;
 			i++;
 			lookup=getc(arq);
+			coluna++;
 			if (lookup=='=')
 			{
 				vetor.lexem[i]=lookup;
@@ -209,7 +225,7 @@ token scanner(FILE *arq) {
 				vetor.type=OP_diferent;
 				return vetor;
 			}//fim de operador "diferente"
-			else
+			else //nao veio o sinal de = , entao eh um token invalido
 			{
 				printf("era esperado o = mas apareceu: '%c' error123,\n",lookup);
 				fclose(arq);
@@ -220,10 +236,12 @@ token scanner(FILE *arq) {
 		{
 			vetor.lexem[i]=lookup;
 			i++;
+			coluna++;
 			lookup=getc(arq);
 			if (lookup=='=')
 			{//eh operador de comparacao
 				vetor.lexem[i]=lookup;
+				coluna++;
 				i++;
 				vetor.lexem[i]='\0';
 				vetor.type=OP_equal;
@@ -233,7 +251,7 @@ token scanner(FILE *arq) {
 			{//eh operador de atribuicao
 				vetor.lexem[i]='\0';
 				vetor.type=OP_assignment;
-				//fseek(arq,-1,SEEK_CUR);
+				fseek(arq,-1,SEEK_CUR);
 				return vetor;
 			}
 		}//fim de IF comparacao ou atribuicao
