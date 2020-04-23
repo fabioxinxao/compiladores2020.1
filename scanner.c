@@ -46,7 +46,7 @@ int OP_Find(char lex[]);
 
 //var global
 int linha = 1;
-int coluna = 0;
+int coluna = 1;
 char lookup;
 token vetor;
 
@@ -76,7 +76,6 @@ token scanner(FILE *arq) {
 	int i=0;
 	int estado=0;
 	int aceito=0;
-	int coluna=0;
 	vetor.lexem[0]='\0';
 	vetor.type=0;
 	static char lookup = ' ';
@@ -89,7 +88,7 @@ token scanner(FILE *arq) {
 		else if(lookup=='\n')
 		{//somente incrementar linha
 			linha++;
-			coluna=0;
+			coluna=1;
 		}
 		
 		else if(isalpha(lookup))//inicio identificador ou palavra reservada
@@ -120,9 +119,9 @@ token scanner(FILE *arq) {
 			return vetor;
 		}//fim identificador ou palavra reservada
 		
-		else if(isdigit(lookup) || lookup=='.')//int ou float
+		else if(isdigit(lookup)!=0 || lookup=='.')//int ou float
 		{
-			while(isdigit(lookup)==0)
+			while(isdigit(lookup)!=0)
 			{
 				vetor.lexem[i]=lookup;
 				i++;
